@@ -1,5 +1,5 @@
 {
-  "name": "mediaviewcomponent",
+  "name": "media-view-component",
   "version": "0.0.1",
   "description": "A webcomponent that can display an image or video.",
   "main": "dist/index.js",
