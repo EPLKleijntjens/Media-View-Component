@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+  <title>Stencil Component Starter</title>
+
+  <script type="module" src="/build/mediaviewcomponent.esm.js"></script>
+  <script nomodule src="/build/mediaviewcomponent.js"></script>
+
+  <style>
+    body {
+      margin: 30px;
+    }
+
+    .container-a {
+      width: 100%;
+      height: 400px;
+
+      background-color: yellow;
+    }
+
+    .container-b {
+      width: 200px;
+      height: 600px;
+
+      background-color: blue;
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <div class="container-a">
+    <media-view fit="contain" play-time="5" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4">
+      <h1 slot="error">Something went horribly wrong!!!</h1>
+    </media-view>
+  </div>
+  <div class="container-b">
+    <media-view fit="contain" src="https://www.fillmurray.com/420/560">
+      <h1 slot="loading">Loading!</h1>
+    </media-view>
+  </div>
+
+</body>
+</html>
