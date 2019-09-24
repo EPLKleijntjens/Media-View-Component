@@ -25,9 +25,25 @@ export namespace Components {
     */
     'mediaSource': MediaSource;
     /**
-    * (optional) Set to true to start playing if the source is a video.
+    * (optional) Whether the animation runs forwards (normal), backwards (reverse), switches direction after each iteration (alternate), or runs backwards and switches direction after each iteration (alternate-reverse). Defaults to "normal".
     */
-    'play': boolean;
+    'panDirection': string;
+    /**
+    * (optional) Set the number of iterations of the panning animation. Accepts Infinity.
+    */
+    'panIterations': number;
+    /**
+    * (optional) Set to true to pause the panning animation.
+    */
+    'panPaused': boolean;
+    /**
+    * (optional) Duration in seconds of the panning animation.
+    */
+    'panTime': number;
+    /**
+    * (optional) Set to false to start playing if the source is a video.
+    */
+    'paused': boolean;
     /**
     * (optional) Time in seconds to start playing from (and loop back to) if source is a video.
     */
@@ -91,9 +107,25 @@ declare namespace LocalJSX {
     */
     'onPlayStarted'?: (event: CustomEvent<any>) => void;
     /**
-    * (optional) Set to true to start playing if the source is a video.
+    * (optional) Whether the animation runs forwards (normal), backwards (reverse), switches direction after each iteration (alternate), or runs backwards and switches direction after each iteration (alternate-reverse). Defaults to "normal".
     */
-    'play'?: boolean;
+    'panDirection'?: string;
+    /**
+    * (optional) Set the number of iterations of the panning animation. Accepts Infinity.
+    */
+    'panIterations'?: number;
+    /**
+    * (optional) Set to true to pause the panning animation.
+    */
+    'panPaused'?: boolean;
+    /**
+    * (optional) Duration in seconds of the panning animation.
+    */
+    'panTime'?: number;
+    /**
+    * (optional) Set to false to start playing if the source is a video.
+    */
+    'paused'?: boolean;
     /**
     * (optional) Time in seconds to start playing from (and loop back to) if source is a video.
     */

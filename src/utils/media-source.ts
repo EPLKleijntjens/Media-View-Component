@@ -61,26 +61,30 @@ export class MediaSource {
   }
 
 
-  public setSource = (src: string) => { return this.setSrc(src, true, true); }
+  public setSource = (src: string) => { return this.setSrc(src, true, true); };
 
-  public setSourceImage = (src: string) => { return this.setSrc(src, true, false); }
+  public setSourceImage = (src: string) => { return this.setSrc(src, true, false); };
 
-  public setSourceVideo = (src: string) => { return this.setSrc(src, false, true); }
+  public setSourceVideo = (src: string) => { return this.setSrc(src, false, true); };
 
 
-  public getSource = () => { return this.source; }
+  public getSource = () => { return this.source; };
 
-  public isLoaded = () => { return this.imageStatus > 1 && this.videoStatus > 1; }
+  public isLoaded = () => { return this.imageStatus > 1 && this.videoStatus > 1; };
 
-  public isValidSource = () => { return this.imageStatus == 3 || this.videoStatus == 3; }
+  public isValidSource = () => { return this.imageStatus == 3 || this.videoStatus == 3; };
 
-  public isImage = () => { return this.imageStatus == 3; }
+  public isImage = () => { return this.imageStatus == 3; };
 
-  public isVideo = () => { return this.videoStatus == 3; }
+  public isVideo = () => { return this.videoStatus == 3; };
 
-  public getImageElement = () => { return this.image; }
+  public getImageElement = () => { return this.image; };
 
-  public getVideoElement = () => { return this.video; }
+  public getVideoElement = () => { return this.video; };
+
+  public getWidth = () => { return this.isImage() ? this.image.width : (this.isVideo() ? this.video.videoWidth : 0); };
+
+  public getHeight = () => { return this.isImage() ? this.image.height : (this.isVideo() ? this.video.videoHeight : 0); };
 
 
   private loadImage(): Promise<number> {

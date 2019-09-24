@@ -43,6 +43,30 @@ media-view img, media-view video {
   height: 100%;
 }
 
+media-view > div.cover-pan {
+  display: block;
+}
+
+media-view > div.cover-pan img, media-view > div.cover-pan video {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* animation: pan 5s infinite linear; */
+  width: auto;
+  height: auto;
+}
+
+media-view > div.cover-pan.tall img, media-view > div.cover-pan.tall video {
+  width: 100%;
+}
+
+media-view > div.cover-pan.wide img, media-view > div.cover-pan.wide video {
+  height: 100%;
+}
+
+
 media-view [slot] {
   display: none;
 }
@@ -50,6 +74,17 @@ media-view [slot] {
 media-view > div.loading [slot="loading"], media-view > div.error [slot="error"] {
   display: initial;
 }
+
+/* @keyframes pan {
+  0% {
+    transform: translate(-50%, -80%);
+  }
+  100% {
+    transform: translate(-50%, -20%);
+  }
+} */
+
+
 
 
 

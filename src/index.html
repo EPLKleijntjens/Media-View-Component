@@ -9,22 +9,48 @@
   <script nomodule src="/build/mediaviewcomponent.js"></script>
 
   <style>
-    body {
-      margin: 30px;
+
+    h1 {
+      text-align: center;
     }
 
-    .container-a {
+    .container {
+      display: flex;
       width: 100%;
-      height: 400px;
+      height: 100%;
 
-      background-color: yellow;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .container-b {
-      width: 200px;
-      height: 600px;
+    .container .card {
+      display: flexbox;
 
-      background-color: blue;
+      width: 200px;
+      margin: 30px;
+      padding: 10px;
+
+      background-color: lightsteelblue;
+    }
+
+    .container .card .frame {
+      border-style: solid;
+      border-width: 3px;
+      border-color: black;
+      background-color: white;
+
+      box-sizing: border-box;
+      width: 100%;
+      height: 200px;
+    }
+
+    .container .card .caption h3 {
+      margin-block-start: .5em;
+      margin-block-end: .2em;
+    }
+
+    .container .card .caption p {
+      margin: 0;
     }
 
   </style>
@@ -32,15 +58,64 @@
 </head>
 <body>
 
-  <div class="container-a">
-    <media-view fit="contain" play-time="5" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4">
-      <h1 slot="error">Something went horribly wrong!!!</h1>
-    </media-view>
-  </div>
-  <div class="container-b">
-    <media-view fit="contain" src="https://www.fillmurray.com/420/560">
-      <h1 slot="loading">Loading!</h1>
-    </media-view>
+  <h1>Different fit options</h1>
+
+  <div class="container">
+    <div class="card">
+      <div class="frame">
+        <media-view fit="contain" src="https://www.fillmurray.com/420/560"></media-view>
+      </div>
+      <div class="caption">
+        <h3>contain</h3>
+        <p>The image/video is scaled to maintain its aspect ratio while fitting within the element’s content box.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="cover" src="https://www.fillmurray.com/420/560"></media-view>
+      </div>
+      <div class="caption">
+        <h3>cover</h3>
+        <p>The image/video is sized to maintain its aspect ratio while filling the element’s entire content box.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="fill" src="https://www.fillmurray.com/420/560"></media-view>
+      </div>
+      <div class="caption">
+        <h3>fill</h3>
+        <p>The image/video is sized to fill the element’s content box. It will be stretched to fit.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="none" src="https://www.fillmurray.com/420/560"></media-view>
+      </div>
+      <div class="caption">
+        <h3>none</h3>
+        <p>The image/video is not resized. Overflow is hidden.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="scale-down" src="https://www.fillmurray.com/420/560"></media-view>
+      </div>
+      <div class="caption">
+        <h3>scale-down</h3>
+        <p>The image/video is sized as if none or contain were specified, whichever would result in a smaller concrete object size.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="cover-pan" pan-direction="alternate" pan-iterations="2.5"
+          paused="false" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+      </div>
+      <div class="caption">
+        <h3>cover-pan</h3>
+        <p>Like cover, but the whole image is panned over. Use pan-paused, pan-direction, pan-time and pan-iterations to customize behavior.</p>
+      </div>
+    </div>
   </div>
 
 </body>
