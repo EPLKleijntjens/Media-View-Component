@@ -81,8 +81,8 @@ export class MediaView {
       this.mediaViewSource.setSource(this.src);
   }
 
-  @Watch("mediaSource")
-  private mediaSourceUpdated(newValue: MediaViewSource, oldValue: MediaViewSource) {
+  @Watch("mediaViewSource")
+  private mediaViewSourceUpdated(newValue: MediaViewSource, oldValue: MediaViewSource) {
     if (oldValue !== newValue) {
       oldValue.unregisterLoadingCallback(this.handleSourceLoading);
       oldValue.unregisterLoadedCallback(this.handleSourceLoaded);
