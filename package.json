@@ -1,6 +1,6 @@
 {
   "name": "media-view-component",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A webcomponent that can display an image or video.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -28,5 +28,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/EPLKleijntjens/Media-View-Component"
-  }
+  },
+  "keywords": [
+    "webcomponent",
+    "video",
+    "image",
+    "pan",
+    "panning"
+  ]
 }

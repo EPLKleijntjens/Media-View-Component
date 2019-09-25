@@ -117,13 +117,13 @@ export class MediaView {
   }
 
   @Watch("panPaused")
-  private panPausedUpdated = () => { this.handlePanAnimation(); };
+  private panPausedUpdated() { this.handlePanAnimation(); };
 
   @Watch("panLoop")
-  private panLoopUpdated = () => { this.handlePanAnimation(); };
+  private panLoopUpdated() { this.handlePanAnimation(); };
 
   @Watch("panTime")
-  private panTimeUpdated = () => { this.handlePanAnimation(); };
+  private panTimeUpdated() { this.handlePanAnimation(); };
 
 
 
