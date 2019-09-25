@@ -2,7 +2,7 @@
 
 # Media View Component
 
-`<media-view>` is a Web Component that acts as an abstraction for the `<img>` and `<video>` elements. Use the `src` attribute like normal and the `media-view` component will figure out if it's dealing with an image or a video.
+`<media-view>` is a Web Component that acts as an abstraction for the `<img>` and `<video>` elements and makes fitting and panning over them easy. Use the `src` attribute like normal and the `media-view` component will figure out if it's dealing with an image or a video.
 
 
 ## Installation
@@ -38,7 +38,7 @@ A default loading spinner and error message are included, but if you want to sho
 </media-view>
 ```
 
-Below is an overview of all the available properties on the `<media-view>` element. Also see a comprehensive example [here](https://codepen.io/EPLKleijntjens/pen/eYOXMyK).
+Below is an overview of all the available properties on the `<media-view>` element. Also see a collection of examples [here](https://codepen.io/EPLKleijntjens/pen/eYOXMyK).
 
 
 ### Properties
