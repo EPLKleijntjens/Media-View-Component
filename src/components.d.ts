@@ -7,8 +7,8 @@
 
 import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 import {
-  MediaSource,
-} from './utils/media-source';
+  MediaViewSource,
+} from './utils/media-view-source';
 
 export namespace Components {
   interface MediaView {
@@ -23,7 +23,7 @@ export namespace Components {
     /**
     * Use to set the mediaSource object directly. Use either this or the src property.
     */
-    'mediaSource': MediaSource;
+    'mediaViewSource': MediaViewSource;
     /**
     * (optional) Whether the animation runs forwards (normal), backwards (reverse), switches direction after each iteration (alternate), or runs backwards and switches direction after each iteration (alternate-reverse). Defaults to "normal".
     */
@@ -89,7 +89,7 @@ declare namespace LocalJSX {
     /**
     * Use to set the mediaSource object directly. Use either this or the src property.
     */
-    'mediaSource'?: MediaSource;
+    'mediaViewSource'?: MediaViewSource;
     /**
     * Fires when the image/video is loaded.
     */

@@ -1,5 +1,5 @@
 import { Component, Prop, Watch, h, State, Event, EventEmitter, Listen, Element } from '@stencil/core';
-import { MediaSource } from '../../utils/media-source';
+import { MediaViewSource } from '../../utils/media-view-source';
 
 @Component({
   tag: 'media-view',
@@ -12,7 +12,7 @@ export class MediaView {
   /** (optional) The source type. Can be either "image" or "video". If unspecified, the component will figure it out. */
   @Prop() srcType: string;
   /** Use to set the mediaSource object directly. Use either this or the src property. */
-  @Prop() mediaSource: MediaSource = new MediaSource();
+  @Prop() mediaViewSource: MediaViewSource = new MediaViewSource();
 
   /** (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none or scale-down. Defaults to contain. */
   @Prop() fit: string = "contain";
@@ -71,18 +71,18 @@ export class MediaView {
 
     if (typeof this.srcType == "string") {
       if (this.srcType.toLowerCase() === "image")
-        this.mediaSource.setSourceImage(this.src);
+        this.mediaViewSource.setSourceImage(this.src);
       else if (this.srcType.toLowerCase() === "video")
-        this.mediaSource.setSourceVideo(this.src);
+        this.mediaViewSource.setSourceVideo(this.src);
       else
-        this.mediaSource.setSource(this.src);
+        this.mediaViewSource.setSource(this.src);
     }
     else
-      this.mediaSource.setSource(this.src);
+      this.mediaViewSource.setSource(this.src);
   }
 
   @Watch("mediaSource")
-  private mediaSourceUpdated(newValue: MediaSource, oldValue: MediaSource) {
+  private mediaSourceUpdated(newValue: MediaViewSource, oldValue: MediaViewSource) {
     if (oldValue !== newValue) {
       oldValue.unregisterLoadingCallback(this.handleSourceLoading);
       oldValue.unregisterLoadedCallback(this.handleSourceLoaded);
@@ -137,7 +137,7 @@ export class MediaView {
 
   private isTall(): boolean {
     if (!this.isSourceLoading) {
-      let mediaScale = this.mediaSource.getWidth() / this.mediaSource.getHeight();
+      let mediaScale = this.mediaViewSource.getWidth() / this.mediaViewSource.getHeight();
       let containerScale = this.hostWidth / this.hostHeight;
 
       return mediaScale < containerScale;
@@ -218,8 +218,8 @@ export class MediaView {
   }
 
   private handleSourceLoaded = () => {
-    this.isSourceValid = this.mediaSource.isValidSource();
-    this.isImage = this.mediaSource.isImage();
+    this.isSourceValid = this.mediaViewSource.isValidSource();
+    this.isImage = this.mediaViewSource.isImage();
     this.isSourceLoading = false;
 
     if (!this.isSourceValid)
@@ -230,8 +230,8 @@ export class MediaView {
     let mediaElement = this.getMediaElement();
 
     if (this.fit == "cover-pan" && mediaElement !== null) {
-      let mediaWidth = this.mediaSource.getWidth();
-      let mediaHeight = this.mediaSource.getHeight();
+      let mediaWidth = this.mediaViewSource.getWidth();
+      let mediaHeight = this.mediaViewSource.getHeight();
 
       let mediaScale = mediaWidth / mediaHeight;
       let containerScale = this.hostWidth / this.hostHeight;
@@ -281,9 +281,9 @@ export class MediaView {
 
 
   componentWillLoad() {
-    this.mediaSource.registerLoadingCallback(this.handleSourceLoading);
-    this.mediaSource.registerLoadedCallback(this.handleSourceLoaded);
-    if (this.mediaSource.isLoaded())
+    this.mediaViewSource.registerLoadingCallback(this.handleSourceLoading);
+    this.mediaViewSource.registerLoadedCallback(this.handleSourceLoaded);
+    if (this.mediaViewSource.isLoaded())
       this.handleSourceLoaded();
 
     if (this.src && this.src.length > 0)
@@ -303,11 +303,11 @@ export class MediaView {
       if (this.isSourceValid) {
         if (this.isImage) {
           return (
-            <img ref={(el) => this.imageElement = el} src={this.mediaSource.getSource()} onLoad={() => this.handleOnloadImage()}/>
+            <img ref={(el) => this.imageElement = el} src={this.mediaViewSource.getSource()} onLoad={() => this.handleOnloadImage()}/>
           );
         } else {
           return (
-            <video ref={(el) => this.videoElement = el} src={this.mediaSource.getSource()} onCanPlay={() => this.handleOnloadVideo()}></video>
+            <video ref={(el) => this.videoElement = el} src={this.mediaViewSource.getSource()} onCanPlay={() => this.handleOnloadVideo()}></video>
           );
         }
       } else {

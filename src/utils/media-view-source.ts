@@ -1,6 +1,6 @@
 import { Reactor } from "./reactor";
 
-export class MediaSource {
+export class MediaViewSource {
 
   private source: string;
   private imageStatus: number = 0;  // 0: not started, 1: loading, 2: failed, 3: success
