@@ -259,7 +259,7 @@ export class MediaView {
           easing: ["linear", "linear"],
           transform: ["translate(" + xStart + "%, " + yStart + "%)", "translate(" + xEnd + "%, " + yEnd + "%)"]
         }, {
-          duration: 3000,
+          duration: this.panTime * 1000,
           iterations: this.panIterations,
           direction: this.panDirection as PlaybackDirection
         });
