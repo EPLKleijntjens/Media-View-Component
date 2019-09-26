@@ -229,7 +229,7 @@ export class MediaView {
   private handlePanAnimation() {
     let mediaElement = this.getMediaElement();
 
-    if (this.fit == "cover-pan" && mediaElement !== null) {
+    if (this.fit == "cover-pan" && (!this.panPaused) && mediaElement !== null) {
       let mediaWidth = this.mediaViewSource.getWidth();
       let mediaHeight = this.mediaViewSource.getHeight();
 
