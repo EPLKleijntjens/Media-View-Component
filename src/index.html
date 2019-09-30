@@ -58,12 +58,12 @@
 </head>
 <body>
 
-  <h1>Different fit options</h1>
+  <h1>fit options</h1>
 
   <div class="container">
     <div class="card">
       <div class="frame">
-        <media-view fit="contain" src="https://www.fillmurray.com/420/560"></media-view>
+        <media-view fit="contain" src="https://www.fillmurray.com/400/600"></media-view>
       </div>
       <div class="caption">
         <h3>contain</h3>
@@ -72,7 +72,7 @@
     </div>
     <div class="card">
       <div class="frame">
-        <media-view fit="cover" src="https://www.fillmurray.com/420/560"></media-view>
+        <media-view fit="cover" src="https://www.fillmurray.com/400/600"></media-view>
       </div>
       <div class="caption">
         <h3>cover</h3>
@@ -81,7 +81,7 @@
     </div>
     <div class="card">
       <div class="frame">
-        <media-view fit="fill" src="https://www.fillmurray.com/420/560"></media-view>
+        <media-view fit="fill" src="https://www.fillmurray.com/400/600"></media-view>
       </div>
       <div class="caption">
         <h3>fill</h3>
@@ -90,16 +90,16 @@
     </div>
     <div class="card">
       <div class="frame">
-        <media-view fit="none" src="https://www.fillmurray.com/420/560"></media-view>
+        <media-view fit="none" src="https://www.fillmurray.com/400/600"></media-view>
       </div>
       <div class="caption">
         <h3>none</h3>
-        <p>The image/video is not resized. Overflow is hidden.</p>
+        <p>The image/video is centered, but not resized. Overflow is hidden.</p>
       </div>
     </div>
     <div class="card">
       <div class="frame">
-        <media-view fit="scale-down" src="https://www.fillmurray.com/420/560"></media-view>
+        <media-view fit="scale-down" src="https://www.fillmurray.com/400/600"></media-view>
       </div>
       <div class="caption">
         <h3>scale-down</h3>
@@ -108,12 +108,151 @@
     </div>
     <div class="card">
       <div class="frame">
-        <media-view fit="cover-pan" pan-direction="alternate" pan-iterations="2.5"
-          paused="false" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+        <media-view fit="pan" pan-direction="random" pan-iterations="1" pan-time="5" src="https://www.fillmurray.com/400/600"></media-view>
       </div>
       <div class="caption">
-        <h3>cover-pan</h3>
+        <h3>pan</h3>
         <p>Like cover, but the whole image is panned over. Use pan-paused, pan-direction, pan-time and pan-iterations to customize behavior.</p>
+      </div>
+    </div>
+  </div>
+
+  <h1>pan parameters</h1>
+
+  <div class="container">
+    <div class="card">
+      <div class="caption">
+        <h3>pan-direction</h3>
+        <p>This represents the start direction of the pan animation. The attribute accepts "normal", "reverse" and "random".</p>
+        <p>For tall images/videos, "normal" means up and "reverse" means down. For wide images/videos, "normal" means right and "reverse" means left.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-direction="normal" pan-iterations="1" pan-time="10" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>normal</h3>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-direction="reverse" pan-iterations="1" pan-time="10" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>reverse</h3>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-direction="random" pan-iterations="1" pan-time="10" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>random</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-paused="true" pan-iterations="1" pan-time="5" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-paused</h3>
+        <p>The panning animation can be paused at any time by setting pan-paused to true.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="Infinity" pan-time="5" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-iterations</h3>
+        <p>One pass from left to right or from bottom to top (or the other way around), counts as an iteration. Set to "Infinity" to loop the animation indefinitely.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="Infinity" pan-time="1" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-time</h3>
+        <p>This is the duration in seconds of a single iteration (pass).</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="1" pan-time="5" pan-end-at-center="false" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-end-at-center="false"</h3>
+        <p>When pan-iterations is not "Infinity", a 'half iteration' is tacked on at the end so that the image/video ends up centered. To prevent that centering, set this attribute to "false".</p>
+      </div>
+    </div>
+  </div>
+
+
+  <h1>video parameters</h1>
+
+  <div class="container">
+    <div class="card">
+      <div class="frame">
+        <media-view fit="contain" paused="false" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+      </div>
+      <div class="caption">
+        <h3>paused="false"</h3>
+        <p>The default value for this attribute is "true". Set to "false" to make the video play.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="contain" paused="false" loop="true" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+      </div>
+      <div class="caption">
+        <h3>loop="true"</h3>
+        <p>The video will loop.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="contain" paused="false" play-time="2" loop="true" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+      </div>
+      <div class="caption">
+        <h3>play-time</h3>
+        <p>The time in seconds this video will be played.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="contain" paused="false" play-start="6" play-time="3" loop="true" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+      </div>
+      <div class="caption">
+        <h3>play-start</h3>
+        <p>The time in seconds to start playing this video from (and if loop="true", to loop back to).</p>
+      </div>
+    </div>
+  </div>
+
+
+  <h1>combine</h1>
+
+  <div class="container">
+    <div class="card">
+      <div class="caption">
+        <h3>fit and pan video</h3>
+        <p>All logical combinations of the above should just work.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="fill" paused="false" play-start="6" play-time="3" loop="true" src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"></media-view>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" paused="false" loop="true"  src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_640_3MG.mp4"
+          pan-iterations="Infinity" pan-time="1"></media-view>
       </div>
     </div>
   </div>

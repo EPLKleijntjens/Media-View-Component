@@ -1,4 +1,4 @@
-import { Component, Prop, Watch, h, State, Event, EventEmitter, Listen, Element } from '@stencil/core';
+import { Component, Prop, Watch, h, State, Event, EventEmitter, Listen, Element, Method } from '@stencil/core';
 import { MediaViewSource } from '../../utils/media-view-source';
 
 @Component({
@@ -14,7 +14,7 @@ export class MediaView {
   /** Use to set the mediaSource object directly. Use either this or the src property. */
   @Prop() mediaViewSource: MediaViewSource = new MediaViewSource();
 
-  /** (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none or scale-down. Defaults to contain. */
+  /** (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none, scale-down or pan. */
   @Prop() fit: string = "contain";
 
   /** (optional) Set to false to start playing if the source is a video. */
@@ -28,12 +28,14 @@ export class MediaView {
 
   /** (optional) Set to true to pause the panning animation. */
   @Prop() panPaused: boolean = false;
-  /** (optional) Whether the animation runs forwards (normal), backwards (reverse), switches direction after each iteration (alternate), or runs backwards and switches direction after each iteration (alternate-reverse). Defaults to "normal". */
+  /** (optional) The direction in which the panning starts. Accepts 'normal' (up for tall media, right for wide), 'reverse' (down for tall media, left for wide) or 'random'. */
   @Prop() panDirection: string = "normal";
-  /** (optional) Set the number of iterations of the panning animation. Accepts Infinity. */
+  /** (optional) Set the number of iterations (passes) of the panning animation. Only accepts whole numbers and Infinity. */
   @Prop() panIterations: number = 1;
-  /** (optional) Duration in seconds of the panning animation. */
-  @Prop() panTime: number = null;
+  /** (optional) Duration in seconds of a single iteration (pass), not counting returning to center. */
+  @Prop() panTime: number = 5;
+  /** (optional) Set to false to prevent panning back to the center after all iterations are done. */
+  @Prop() panEndAtCenter: boolean = true;
 
 
 
@@ -55,13 +57,27 @@ export class MediaView {
   @Element() private hostElement: HTMLElement;
   @State() private hostWidth: number;
   @State() private hostHeight: number;
+  private mediaWidth: number;
+  private mediaHeight: number;
 
 
   private isMediaElementLoaded: boolean = false;
   private imageElement: HTMLImageElement;
   private videoElement: HTMLVideoElement;
+
+
   private playStartedEmitted: boolean = false;
 
+
+  private panDiv: HTMLDivElement;
+  private panIterationsDone: number = 0;
+  @State() private panFinished: boolean = false;
+
+
+
+  @Method() public sizeUpdated() {
+    this.handleHostResize();
+  }
 
 
   @Watch("src")
@@ -84,6 +100,8 @@ export class MediaView {
   @Watch("mediaViewSource")
   private mediaViewSourceUpdated(newValue: MediaViewSource, oldValue: MediaViewSource) {
     if (oldValue !== newValue) {
+      this.isMediaElementLoaded = false;
+
       oldValue.unregisterLoadingCallback(this.handleSourceLoading);
       oldValue.unregisterLoadedCallback(this.handleSourceLoaded);
 
@@ -98,7 +116,7 @@ export class MediaView {
   }
 
   @Watch("paused")
-  private playUpdated() {
+  private pausedUpdated() {
     if (typeof this.videoElement !== 'undefined' && this.videoElement !== null) {
       if (!this.paused) {
         this.startVideoPlay();
@@ -116,17 +134,13 @@ export class MediaView {
     }
   }
 
-  @Watch("panPaused")
-  private panPausedUpdated() { this.handlePanAnimation(); };
-
-  @Watch("panLoop")
-  private panLoopUpdated() { this.handlePanAnimation(); };
-
   @Watch("panTime")
-  private panTimeUpdated() { this.handlePanAnimation(); };
+  private panTimeUpdated() {
+    if (this.fit !== "pan")
+      return;
 
-
-
+    this.panDiv.style.setProperty("--pan-duration", this.panTime + "s");
+  };
 
 
   @Listen("resize", {target: 'window'})
@@ -135,14 +149,52 @@ export class MediaView {
     this.hostHeight = this.hostElement.clientHeight;
   }
 
-  private isTall(): boolean {
-    if (!this.isSourceLoading) {
-      let mediaScale = this.mediaViewSource.getWidth() / this.mediaViewSource.getHeight();
-      let containerScale = this.hostWidth / this.hostHeight;
+  private handleOnloadImage() {
+    this.isMediaElementLoaded = true;
+    this.startPanAnimation();
 
-      return mediaScale < containerScale;
+    this.mediaLoaded.emit();
+  }
+
+  private handleOnloadVideo() {
+    if (!this.isMediaElementLoaded) {
+      this.isMediaElementLoaded = true;
+      this.videoElement.muted = true;
+      this.playStartedEmitted = false;
+
+      this.loopUpdated();
+      this.pausedUpdated();
+      this.startPanAnimation();
+
+      this.mediaLoaded.emit();
     }
-    return null;
+  }
+
+
+  private handleSourceLoading = () => {
+    this.isSourceLoading = true;
+    this.isMediaElementLoaded = false;
+  };
+
+  private handleSourceLoaded = () => {
+    this.isSourceValid = this.mediaViewSource.isValidSource();
+    this.isImage = this.mediaViewSource.isImage();
+    this.isSourceLoading = false;
+
+    this.mediaWidth = this.mediaViewSource.getWidth();
+    this.mediaHeight = this.mediaViewSource.getHeight();
+
+    if (!this.isSourceValid)
+      this.mediaSourceInvalid.emit();
+  };
+
+
+
+  private isTall(): boolean {
+    let mediaScale = this.mediaWidth / this.mediaHeight;
+    let containerScale = this.hostWidth / this.hostHeight;
+
+    return mediaScale < containerScale;
   }
 
   private getMediaElement(): HTMLElement {
@@ -154,6 +206,37 @@ export class MediaView {
     }
     return null;
   }
+
+  private getFitTransform() {
+    let center = "translate(" + (this.mediaWidth * -.5 + this.hostWidth * 0.5) + "px, " + (this.mediaHeight * -.5 + this.hostHeight * 0.5) + "px)";
+    let transform = "";
+
+    switch(this.fit) {
+      case "contain":
+        transform = "scale(" + (this.isTall() ? this.hostHeight / this.mediaHeight : this.hostWidth / this.mediaWidth) + ") " + center;
+        break;
+
+      case "pan":
+      case "cover":
+        transform = "scale(" + (this.isTall() ? this.hostWidth / this.mediaWidth : this.hostHeight / this.mediaHeight) + ") " + center;
+        break;
+
+      case "fill":
+        transform = "scale(" + (this.hostWidth / this.mediaWidth) + ", " + (this.hostHeight / this.mediaHeight) + ") " + center;
+        break;
+
+      case "scale-down":
+        transform = "scale(" + Math.min(this.isTall() ? this.hostHeight / this.mediaHeight : this.hostWidth / this.mediaWidth, 1) + ") " + center;
+        break;
+
+      case "none":
+      default:
+        transform = center;
+    }
+
+    return transform;
+  }
+
 
   private startVideoPlay() {
     if (this.videoElement.currentTime == 0 || this.videoElement.paused || this.videoElement.ended) {
@@ -175,7 +258,7 @@ export class MediaView {
         console.log("Can't play " + this.src);
         this.loop = false;
         this.endVideoPlay();
-      })
+      });
     }
   }
 
@@ -192,90 +275,70 @@ export class MediaView {
   }
 
 
-  private handleOnloadImage() {
-    this.isMediaElementLoaded = true;
-    this.handlePanAnimation();
-
-    this.mediaLoaded.emit();
-  }
-
-  private handleOnloadVideo() {
-    this.isMediaElementLoaded = true;
-    this.videoElement.muted = true;
-    this.playStartedEmitted = false;
-
-    this.loopUpdated();
-    this.playUpdated();
-    this.handlePanAnimation();
-
-    this.mediaLoaded.emit();
-  }
 
 
-  private handleSourceLoading = () => {
-    this.isSourceLoading = true;
-    this.isMediaElementLoaded = false;
-  }
+  private startPanAnimation() {
+    if (this.fit !== "pan")
+      return;
 
-  private handleSourceLoaded = () => {
-    this.isSourceValid = this.mediaViewSource.isValidSource();
-    this.isImage = this.mediaViewSource.isImage();
-    this.isSourceLoading = false;
+    this.panDiv.addEventListener("animationiteration", this.handleAnimationIteration);
+    this.panDiv.addEventListener("animationend", this.handleAnimationEnd);
 
-    if (!this.isSourceValid)
-      this.mediaSourceInvalid.emit();
-  }
+    this.panIterationsDone = 0;
+    this.panFinished = false;
 
-  private handlePanAnimation() {
-    let mediaElement = this.getMediaElement();
+    let [xStart, yStart, xEnd, yEnd] = this.getPanProperties();
 
-    if (this.fit == "cover-pan" && (!this.panPaused) && mediaElement !== null) {
-      let mediaWidth = this.mediaViewSource.getWidth();
-      let mediaHeight = this.mediaViewSource.getHeight();
-
-      let mediaScale = mediaWidth / mediaHeight;
-      let containerScale = this.hostWidth / this.hostHeight;
-
-      let xStart: number; let yStart: number; let xEnd: number; let yEnd: number;
-      if (mediaScale < containerScale) { // tall
-        xStart = 0; xEnd = 0;
-        let partLost = 1 - this.hostHeight / ((this.hostWidth / mediaWidth) * mediaHeight);
-        yStart = partLost * -0.5;
-        yEnd = partLost * 0.5;
-      } else { // wide
-        yStart = 0; yEnd = 0;
-        let partLost = 1 - this.hostWidth / ((this.hostHeight / mediaHeight) * mediaWidth);
-        xStart = partLost * 0.5;
-        xEnd = partLost * -0.5;
-      }
-
-      xStart = xStart * 100 - 50;
-      yStart = yStart * 100 - 50;
-      xEnd = xEnd * 100 - 50;
-      yEnd = yEnd * 100 - 50;
-
-      mediaElement.animate({
-          offset: [0, 1],
-          easing: ["linear", "linear"],
-          transform: ["translate(" + xStart + "%, " + yStart + "%)", "translate(" + xEnd + "%, " + yEnd + "%)"]
-        }, {
-          duration: this.panTime * 1000,
-          iterations: this.panIterations,
-          direction: this.panDirection as PlaybackDirection
-        });
+    if (this.panDirection === "normal" || (this.panDirection === "random" && Math.random() < .5)) {
+      this.panDiv.style.setProperty("--pan-start-x", xStart);
+      this.panDiv.style.setProperty("--pan-start-y", yStart);
+      this.panDiv.style.setProperty("--pan-end-x", xEnd);
+      this.panDiv.style.setProperty("--pan-end-y", yEnd);
+    } else {
+      this.panDiv.style.setProperty("--pan-start-x", xEnd);
+      this.panDiv.style.setProperty("--pan-start-y", yEnd);
+      this.panDiv.style.setProperty("--pan-end-x", xStart);
+      this.panDiv.style.setProperty("--pan-end-y", yStart);
     }
+
+    this.panDiv.style.setProperty("--pan-duration", this.panTime + "s");
+    this.panDiv.style.setProperty("--pan-direction", "alternate");
+    this.panDiv.style.setProperty("--pan-iteration-count", "infinite");
   }
 
+  private handleAnimationIteration = () => {
+    this.panIterationsDone += 1;
+    if (this.panIterationsDone >= this.panIterations) {
+      if (!this.panEndAtCenter)
+        this.panFinished = true;
+      else
+        this.panDiv.style.setProperty("--pan-iteration-count", (this.panIterationsDone + .5).toString());
+    }
 
-  private getContainerClasses(): {[className: string]: boolean} {
-    let o = {};
-    o[this.fit] = true;
-    if (this.isSourceLoading) o["loading"] = true;
-    if (!this.isSourceValid) o["error"] = true;
-    if (this.isTall()) o["tall"] = true;
-    else o["wide"] = true;
+  };
 
-    return o;
+  private handleAnimationEnd = () => {
+    if (this.panIterationsDone >= this.panIterations)
+      this.panFinished = true;
+  };
+
+  private getPanProperties(): [string, string, string, string] {
+    let xStart: number; let yStart: number; let xEnd: number; let yEnd: number;
+    if (this.mediaWidth / this.mediaHeight < this.hostWidth / this.hostHeight) { // tall
+      xStart = 0; xEnd = 0;
+
+      let scale = this.hostWidth / this.mediaWidth;
+      let partLost = scale * this.mediaHeight - this.hostHeight;
+      yStart = partLost * -0.5; yEnd = partLost * 0.5;
+    } else { // wide
+      yStart = 0; yEnd = 0;
+
+      let scale = this.hostHeight / this.mediaHeight;
+      let partLost = scale * this.mediaWidth - this.hostWidth;
+      xStart = partLost * 0.5; xEnd = partLost * -0.5;
+    }
+
+    return [xStart + "px", yStart + "px", xEnd + "px", yEnd + "px"];
   }
 
 
@@ -301,15 +364,16 @@ export class MediaView {
         </slot>);
     } else {
       if (this.isSourceValid) {
-        if (this.isImage) {
-          return (
-            <img ref={(el) => this.imageElement = el} src={this.mediaViewSource.getSource()} onLoad={() => this.handleOnloadImage()}/>
-          );
-        } else {
-          return (
-            <video ref={(el) => this.videoElement = el} src={this.mediaViewSource.getSource()} onCanPlay={() => this.handleOnloadVideo()}></video>
-          );
-        }
+        return (
+          <div class={{"panner": true, "unpaused": this.fit == "pan" && !this.panPaused && !this.panFinished}} ref={(el) => this.panDiv = el}>
+            <div class="fitter" style={{"transform": this.getFitTransform()}}>
+              {this.isImage
+                ? <img ref={(el) => this.imageElement = el} src={this.mediaViewSource.getSource()} onLoad={() => this.handleOnloadImage()}/>
+                : <video ref={(el) => this.videoElement = el} src={this.mediaViewSource.getSource()} onCanPlay={() => this.handleOnloadVideo()}></video>
+              }
+            </div>
+          </div>
+        );
       } else {
         return (
           <slot name="error">Error</slot>
@@ -320,7 +384,7 @@ export class MediaView {
 
   render() {
     return (
-      <div class={this.getContainerClasses()}>
+      <div class={{"container": true, "loading": this.isSourceLoading, "error": !this.isSourceValid}}>
         {this.renderContent()}
       </div>
     );

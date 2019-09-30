@@ -13,7 +13,7 @@ import {
 export namespace Components {
   interface MediaView {
     /**
-    * (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none or scale-down. Defaults to contain.
+    * (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none, scale-down or pan.
     */
     'fit': string;
     /**
@@ -25,11 +25,15 @@ export namespace Components {
     */
     'mediaViewSource': MediaViewSource;
     /**
-    * (optional) Whether the animation runs forwards (normal), backwards (reverse), switches direction after each iteration (alternate), or runs backwards and switches direction after each iteration (alternate-reverse). Defaults to "normal".
+    * (optional) The direction in which the panning starts. Accepts 'normal' (up for tall media, right for wide), 'reverse' (down for tall media, left for wide) or 'random'.
     */
     'panDirection': string;
     /**
-    * (optional) Set the number of iterations of the panning animation. Accepts Infinity.
+    * (optional) Set to false to prevent panning back to the center after all iterations are done.
+    */
+    'panEndAtCenter': boolean;
+    /**
+    * (optional) Set the number of iterations (passes) of the panning animation. Only accepts whole numbers and Infinity.
     */
     'panIterations': number;
     /**
@@ -37,7 +41,7 @@ export namespace Components {
     */
     'panPaused': boolean;
     /**
-    * (optional) Duration in seconds of the panning animation.
+    * (optional) Duration in seconds of a single iteration (pass), not counting returning to center.
     */
     'panTime': number;
     /**
@@ -52,6 +56,7 @@ export namespace Components {
     * (optional) Time in seconds to play if source is a video.
     */
     'playTime': number;
+    'sizeUpdated': () => Promise<void>;
     /**
     * The source url of the image/video. Use either this or the mediaSource property.
     */
@@ -79,7 +84,7 @@ declare global {
 declare namespace LocalJSX {
   interface MediaView extends JSXBase.HTMLAttributes<HTMLMediaViewElement> {
     /**
-    * (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none or scale-down. Defaults to contain.
+    * (optional) The kind of "object-fit" to use for the image/video. Can be contian, cover, fill, none, scale-down or pan.
     */
     'fit'?: string;
     /**
@@ -107,11 +112,15 @@ declare namespace LocalJSX {
     */
     'onPlayStarted'?: (event: CustomEvent<any>) => void;
     /**
-    * (optional) Whether the animation runs forwards (normal), backwards (reverse), switches direction after each iteration (alternate), or runs backwards and switches direction after each iteration (alternate-reverse). Defaults to "normal".
+    * (optional) The direction in which the panning starts. Accepts 'normal' (up for tall media, right for wide), 'reverse' (down for tall media, left for wide) or 'random'.
     */
     'panDirection'?: string;
     /**
-    * (optional) Set the number of iterations of the panning animation. Accepts Infinity.
+    * (optional) Set to false to prevent panning back to the center after all iterations are done.
+    */
+    'panEndAtCenter'?: boolean;
+    /**
+    * (optional) Set the number of iterations (passes) of the panning animation. Only accepts whole numbers and Infinity.
     */
     'panIterations'?: number;
     /**
@@ -119,7 +128,7 @@ declare namespace LocalJSX {
     */
     'panPaused'?: boolean;
     /**
-    * (optional) Duration in seconds of the panning animation.
+    * (optional) Duration in seconds of a single iteration (pass), not counting returning to center.
     */
     'panTime'?: number;
     /**

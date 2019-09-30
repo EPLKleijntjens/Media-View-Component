@@ -1,6 +1,6 @@
 {
   "name": "media-view-component",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A webcomponent that can display an image or video and makes fitting and panning over them easy.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

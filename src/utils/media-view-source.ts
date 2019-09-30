@@ -9,7 +9,10 @@ export class MediaViewSource {
   private image: HTMLImageElement = null;
   private video: HTMLVideoElement = null;
 
-  private loadPromise: Promise<boolean> = null;
+  private loadPromise: Promise<boolean>;
+  private loadPromiseResolver: (x:boolean)=>void;
+  private loadPromiseResolved: boolean = true;
+
   private reactor: Reactor = new Reactor();
   private readonly loadingEvent: string = "loading";
   private readonly loadedEvent: string = "loaded";
@@ -41,6 +44,9 @@ export class MediaViewSource {
 
 
   private setSrc(src: string, tryImage: boolean, tryVideo: boolean): Promise<boolean> {
+    if (this.loadPromiseResolved)
+      this.loadPromise = new Promise<boolean>((resolve) => { this.loadPromiseResolver = resolve; });
+
     this.source = src;
 
     this.imageStatus = tryImage ? 1 : 2;
@@ -48,14 +54,14 @@ export class MediaViewSource {
 
     this.reactor.dispatchEvent(this.loadingEvent);
 
-    this.loadPromise = new Promise<boolean> ((resolve) => {
-      Promise.all([tryImage ? this.loadImage() : new Promise<number>((r)=>r(2)), tryVideo ? this.loadVideo() : new Promise<number>((r)=>r(2))])
-        .then((res) => {
-          [this.imageStatus, this.videoStatus] = res;
-          this.reactor.dispatchEvent(this.loadedEvent);
-        })
-        .then(() => {resolve(this.isValidSource())});
-    });
+    Promise.all([tryImage ? this.loadImage() : new Promise<number>((r)=>r(2)), tryVideo ? this.loadVideo() : new Promise<number>((r)=>r(2))])
+      .then((res) => {
+        [this.imageStatus, this.videoStatus] = res;
+        this.reactor.dispatchEvent(this.loadedEvent);
+
+        this.loadPromiseResolver(this.isValidSource());
+        this.loadPromiseResolved = true;
+      })
 
     return this.loadPromise;
   }
@@ -69,6 +75,8 @@ export class MediaViewSource {
 
 
   public getSource = () => { return this.source; };
+
+  public getLoadPromise = () => { return this.loadPromise; };
 
   public isLoaded = () => { return this.imageStatus > 1 && this.videoStatus > 1; };
 
