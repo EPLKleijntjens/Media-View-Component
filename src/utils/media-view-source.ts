@@ -11,7 +11,7 @@ export class MediaViewSource {
 
   private loadPromise: Promise<boolean>;
   private loadPromiseResolver: (x:boolean)=>void;
-  private loadPromiseResolved: boolean = true;
+  private loadPromiseResolved: boolean = false;
 
   private reactor: Reactor = new Reactor();
   private readonly loadingEvent: string = "loading";
@@ -19,6 +19,8 @@ export class MediaViewSource {
 
 
   public constructor(src?: string, srcType?: string) {
+    this.loadPromise = new Promise<boolean>((resolve) => { this.loadPromiseResolver = resolve; });
+
     if (!(typeof src === 'undefined' || src === null)) {
       if (!(typeof srcType === 'undefined' || srcType === null)) {
         if (srcType.toLowerCase() === "image")
