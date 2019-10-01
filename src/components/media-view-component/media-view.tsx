@@ -314,17 +314,17 @@ export class MediaView {
       xStart = 0; xEnd = 0;
 
       let scale = this.hostWidth / this.mediaWidth;
-      let partLost = scale * this.mediaHeight - this.hostHeight;
+      let partLost = (scale * this.mediaHeight - this.hostHeight) / this.hostHeight * 100;
       yStart = partLost * -0.5; yEnd = partLost * 0.5;
     } else { // wide
       yStart = 0; yEnd = 0;
 
       let scale = this.hostHeight / this.mediaHeight;
-      let partLost = scale * this.mediaWidth - this.hostWidth;
+      let partLost = (scale * this.mediaWidth - this.hostWidth) / this.hostWidth * 100;
       xStart = partLost * 0.5; xEnd = partLost * -0.5;
     }
 
-    return [xStart + "px", yStart + "px", xEnd + "px", yEnd + "px"];
+    return [xStart + "%", yStart + "%", xEnd + "%", yEnd + "%"];
   }
 
   private setPanPositionProperties() {
