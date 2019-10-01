@@ -281,6 +281,10 @@ export class MediaView {
     if (this.fit !== "pan")
       return;
 
+    this.panDiv.classList.remove("panner");
+    void this.panDiv.offsetWidth;
+    this.panDiv.classList.add("panner");
+
     this.panDiv.addEventListener("animationiteration", this.handleAnimationIteration);
     this.panDiv.addEventListener("animationend", this.handleAnimationEnd);
 
