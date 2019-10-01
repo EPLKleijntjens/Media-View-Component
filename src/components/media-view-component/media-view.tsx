@@ -71,6 +71,7 @@ export class MediaView {
 
   private panDiv: HTMLDivElement;
   private panIterationsDone: number = 0;
+  private panRandomNumber: number;
   @State() private panFinished: boolean = false;
 
 
@@ -147,6 +148,9 @@ export class MediaView {
   private handleHostResize() {
     this.hostWidth = this.hostElement.clientWidth;
     this.hostHeight = this.hostElement.clientHeight;
+
+    if (this.isMediaElementLoaded && this.fit === "pan")
+      this.setPanPositionProperties();
   }
 
   private handleOnloadImage() {
@@ -195,16 +199,6 @@ export class MediaView {
     let containerScale = this.hostWidth / this.hostHeight;
 
     return mediaScale < containerScale;
-  }
-
-  private getMediaElement(): HTMLElement {
-    if (this.isMediaElementLoaded) {
-      if (this.isImage)
-        return this.imageElement;
-      else
-        return this.videoElement;
-    }
-    return null;
   }
 
   private getFitTransform() {
@@ -276,7 +270,6 @@ export class MediaView {
 
 
 
-
   private startPanAnimation() {
     if (this.fit !== "pan")
       return;
@@ -289,21 +282,10 @@ export class MediaView {
     this.panDiv.addEventListener("animationend", this.handleAnimationEnd);
 
     this.panIterationsDone = 0;
+    this.panRandomNumber = Math.random();
     this.panFinished = false;
 
-    let [xStart, yStart, xEnd, yEnd] = this.getPanProperties();
-
-    if (this.panDirection === "normal" || (this.panDirection === "random" && Math.random() < .5)) {
-      this.panDiv.style.setProperty("--pan-start-x", xStart);
-      this.panDiv.style.setProperty("--pan-start-y", yStart);
-      this.panDiv.style.setProperty("--pan-end-x", xEnd);
-      this.panDiv.style.setProperty("--pan-end-y", yEnd);
-    } else {
-      this.panDiv.style.setProperty("--pan-start-x", xEnd);
-      this.panDiv.style.setProperty("--pan-start-y", yEnd);
-      this.panDiv.style.setProperty("--pan-end-x", xStart);
-      this.panDiv.style.setProperty("--pan-end-y", yStart);
-    }
+    this.setPanPositionProperties();
 
     this.panDiv.style.setProperty("--pan-duration", this.panTime + "s");
     this.panDiv.style.setProperty("--pan-direction", "alternate");
@@ -343,6 +325,22 @@ export class MediaView {
     }
 
     return [xStart + "px", yStart + "px", xEnd + "px", yEnd + "px"];
+  }
+
+  private setPanPositionProperties() {
+    let [xStart, yStart, xEnd, yEnd] = this.getPanProperties();
+
+    if (this.panDirection === "normal" || (this.panDirection === "random" && this.panRandomNumber < .5)) {
+      this.panDiv.style.setProperty("--pan-start-x", xStart);
+      this.panDiv.style.setProperty("--pan-start-y", yStart);
+      this.panDiv.style.setProperty("--pan-end-x", xEnd);
+      this.panDiv.style.setProperty("--pan-end-y", yEnd);
+    } else {
+      this.panDiv.style.setProperty("--pan-start-x", xEnd);
+      this.panDiv.style.setProperty("--pan-start-y", yEnd);
+      this.panDiv.style.setProperty("--pan-end-x", xStart);
+      this.panDiv.style.setProperty("--pan-end-y", yStart);
+    }
   }
 
 
