@@ -36,6 +36,8 @@ export class MediaView {
   @Prop() panTime: number = 5;
   /** (optional) Set to false to prevent panning back to the center after all iterations are done. */
   @Prop() panEndAtCenter: boolean = true;
+  /** (optional) The minimum percentage of the media surface that is garanteed to be visible at any point during the panning. */
+  @Prop() panMinVisible: number = 80;
 
 
 
@@ -207,12 +209,11 @@ export class MediaView {
 
     switch(this.fit) {
       case "contain":
-        transform = "scale(" + (this.isTall() ? this.hostHeight / this.mediaHeight : this.hostWidth / this.mediaWidth) + ") " + center;
+        transform = "scale(" + this.getContainScale() + ") " + center;
         break;
 
-      case "pan":
       case "cover":
-        transform = "scale(" + (this.isTall() ? this.hostWidth / this.mediaWidth : this.hostHeight / this.mediaHeight) + ") " + center;
+        transform = "scale(" + this.getCoverScale() + ") " + center;
         break;
 
       case "fill":
@@ -223,12 +224,31 @@ export class MediaView {
         transform = "scale(" + Math.min(this.isTall() ? this.hostHeight / this.mediaHeight : this.hostWidth / this.mediaWidth, 1) + ") " + center;
         break;
 
+      case "pan":
+        transform = "scale(" + this.getPanScale() + ") " + center;
+        break;
+
       case "none":
       default:
         transform = center;
     }
 
     return transform;
+  }
+
+  private getContainScale() { return this.isTall() ? this.hostHeight / this.mediaHeight : this.hostWidth / this.mediaWidth; }
+
+  private getCoverScale() { return this.isTall() ? this.hostWidth / this.mediaWidth : this.hostHeight / this.mediaHeight; }
+
+  private getPanScale() {
+    let coverScale = this.getCoverScale();
+    let partVisible = (this.isTall() ? this.hostHeight / (this.mediaHeight * coverScale) : this.hostWidth / (this.mediaWidth * coverScale));
+
+    let minVisible = this.panMinVisible * .01;
+    if (partVisible < minVisible)
+      return coverScale + (this.getContainScale() - coverScale) * ((minVisible - partVisible) / (1 - partVisible));
+    else
+      return coverScale;
   }
 
 
@@ -313,13 +333,13 @@ export class MediaView {
     if (this.mediaWidth / this.mediaHeight < this.hostWidth / this.hostHeight) { // tall
       xStart = 0; xEnd = 0;
 
-      let scale = this.hostWidth / this.mediaWidth;
+      let scale = this.getPanScale();
       let partLost = (scale * this.mediaHeight - this.hostHeight) / this.hostHeight * 100;
       yStart = partLost * -0.5; yEnd = partLost * 0.5;
     } else { // wide
       yStart = 0; yEnd = 0;
 
-      let scale = this.hostHeight / this.mediaHeight;
+      let scale = this.getPanScale();
       let partLost = (scale * this.mediaWidth - this.hostWidth) / this.hostWidth * 100;
       xStart = partLost * 0.5; xEnd = partLost * -0.5;
     }

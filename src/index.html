@@ -112,7 +112,7 @@
       </div>
       <div class="caption">
         <h3>pan</h3>
-        <p>Like cover, but the whole image is panned over. Use pan-paused, pan-direction, pan-time and pan-iterations to customize behavior.</p>
+        <p>Zoomed to somewhere between <strong>contain</strong> and <strong>cover</strong>, but the whole image is panned over. Use pan-paused, pan-direction, pan-time, pan-iterations and pan-min-visible to customize behavior.</p>
       </div>
     </div>
   </div>
@@ -154,6 +154,55 @@
   </div>
 
   <div class="container">
+    <div class="card">
+      <div class="caption">
+        <h3>pan-min-visible</h3>
+        <p>This represents the minimum visible percentage of the surface of the image/video at any moment during the panning.</p>
+        <p>The default value is "80".</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="Infinity" pan-time="5" pan-min-visible="90" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-min-visible="90"</h3>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="Infinity" pan-time="5" pan-min-visible="70" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-min-visible="70"</h3>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="Infinity" pan-time="5" pan-min-visible="100" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-min-visible="100"</h3>
+        <p>This is effectively the same as <strong>fit="contain"</strong>.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="frame">
+        <media-view fit="pan" pan-iterations="Infinity" pan-time="5" pan-min-visible="0" src="https://www.fillmurray.com/400/600"></media-view>
+      </div>
+      <div class="caption">
+        <h3>pan-min-visible="0"</h3>
+        <p>Scaling will be the same as with <strong>fit="cover"</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="caption">
+        <h3>Other panning parameters</h3>
+      </div>
+    </div>
     <div class="card">
       <div class="frame">
         <media-view fit="pan" pan-paused="true" pan-iterations="1" pan-time="5" src="https://www.fillmurray.com/400/600"></media-view>

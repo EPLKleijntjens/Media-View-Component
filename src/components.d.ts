@@ -37,6 +37,10 @@ export namespace Components {
     */
     'panIterations': number;
     /**
+    * (optional) The minimum percentage of the media surface that is garanteed to be visible at any point during the panning.
+    */
+    'panMinVisible': number;
+    /**
     * (optional) Set to true to pause the panning animation.
     */
     'panPaused': boolean;
@@ -123,6 +127,10 @@ declare namespace LocalJSX {
     * (optional) Set the number of iterations (passes) of the panning animation. Only accepts whole numbers and Infinity.
     */
     'panIterations'?: number;
+    /**
+    * (optional) The minimum percentage of the media surface that is garanteed to be visible at any point during the panning.
+    */
+    'panMinVisible'?: number;
     /**
     * (optional) Set to true to pause the panning animation.
     */
